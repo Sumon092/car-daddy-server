@@ -9,7 +9,7 @@ app.use(cors());
 
 
 app.get('/', (req, res) => {
-    res.send('car part server is running!')
+    res.send('car part server is running on heroku!')
 })
 
 app.listen(port, () => {
