@@ -20,6 +20,21 @@ async function run() {
         console.log('db connected');
         const partsCollection = client.db('Parts_man').collection('parts');
         const orderCollection = client.db('Parts_man').collection('order');
+        const userCollection = client.db('Parts_man').collection('users');
+
+
+
+        app.put('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = req.body;
+            const filter = { email: email }
+            const options = { upsert: true }
+            const updateDoc = {
+                $set: user,
+            };
+            const results = await userCollection.updateOne(filter, updateDoc, options);
+            res.send(results)
+        })
 
 
         app.get('/parts', async (req, res) => {
