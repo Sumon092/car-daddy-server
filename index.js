@@ -16,12 +16,12 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 function verifyJWT(req, res, next) {
     const authorization = req.headers.authorization;
     if (!authorization) {
-        return res.status('401').send({ message: 'unauthorized access' });
+        return res.status(401).send({ message: 'unauthorized access' });
     }
     const token = authorization.split(' ')[1];
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
         if (err) {
-            return res.status('403').send({ message: 'forbidden access' })
+            return res.status(403).send({ message: 'forbidden access' })
         }
         req.decoded = decoded;
         next();
@@ -45,16 +45,30 @@ async function run() {
         })
 
         //make admin
-        app.put('/user/admin/:email', async (req, res) => {
+        app.put('/user/admin/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
-            console.log(email);
-            const filter = { email: email };
-            const updateDoc = {
-                $set: { role: 'admin' },
-            };
-            const result = await userCollection.updateOne(filter, updateDoc);
-            res.send(result)
+            const requestPerson = req.decoded.email;
+            const requestedPersonAccount = await userCollection.findOne({ email: requestPerson });
+            if (requestedPersonAccount.role === 'admin') {
+                const filter = { email: email };
+                const updateDoc = {
+                    $set: { role: 'admin' },
+                };
+                const result = await userCollection.updateOne(filter, updateDoc);
+                res.send(result)
+            }
+            else {
+                res.status(403).send({ message: 'forbidden access' })
+            }
         });
+
+        //protect admin route
+        app.get('/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = await userCollection.findOne({ email: email });
+            const isUserAdmin = user.role === 'admin';
+            res.send({ admin: isUserAdmin });
+        })
 
 
         app.put('/user/:email', async (req, res) => {
@@ -85,7 +99,7 @@ async function run() {
             const decodedEmail = req.decoded.email;
             if (email === decodedEmail) {
                 const authorization = req.headers.authorization;
-                console.log('accessToken', authorization);
+                // console.log('accessToken', authorization);
                 const query = { email: email }
                 const result = await orderCollection.find(query).toArray();
                 return res.send(result)
