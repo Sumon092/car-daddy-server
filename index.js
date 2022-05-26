@@ -38,9 +38,28 @@ async function run() {
         const userCollection = client.db('Parts_man').collection('users');
 
 
+        app.get('/users', verifyJWT, async (req, res) => {
+            const user = req.body;
+            const result = await userCollection.find(user).toArray();
+            res.send(result)
+        })
+
+        //make admin
+        app.put('/user/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            console.log(email);
+            const filter = { email: email };
+            const updateDoc = {
+                $set: { role: 'admin' },
+            };
+            const result = await userCollection.updateOne(filter, updateDoc);
+            res.send(result)
+        });
+
 
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
+            // const name = req.params.disPlayName;
             const user = req.body;
             const filter = { email: email }
             const options = { upsert: true }
