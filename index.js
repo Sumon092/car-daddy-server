@@ -189,7 +189,7 @@ async function run() {
 run().catch(console.dir);
 
 app.get('/', (req, res) => {
-    res.send('car part server is running on heroku!')
+    res.send('car part server on heroku!')
 })
 
 app.listen(port, () => {
