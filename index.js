@@ -133,12 +133,14 @@ async function run() {
             res.send(result)
         })
 
-        app.delete('/products/:id', verifyJWT, verifyAdmin, async (req, res) => {
+        app.delete('/products/:id', async (req, res) => {
+            // const products = req.body;
             const id = req.params._id;
-            const query = { _id: ObjectId(id) };
+            const query = { ObjectId: id };
+            console.log(query);
             const result = await productsCollection.deleteOne(query);
-            res.send(result)
-        })
+            res.send(result);
+        });
 
         app.post('/order', async (req, res) => {
             const order = req.body;
