@@ -37,6 +37,8 @@ async function run() {
         const orderCollection = client.db('Parts_man').collection('order');
         const userCollection = client.db('Parts_man').collection('users');
         const productsCollection = client.db('Parts_man').collection('products');
+        const reviewsCollection = client.db('Parts_man').collection('reviews');
+        const profileCollection = client.db('Parts_man').collection('profile');
 
         const verifyAdmin = async (req, res, next) => {
             const requestPerson = req.decoded.email;
@@ -164,6 +166,19 @@ async function run() {
             }
             const result = await orderCollection.insertOne(order);
             return res.send({ success: true, result });
+        })
+
+        app.put('/profile/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = req.body;
+            const filter = { email: email };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: user,
+            };
+            const result = await profileCollection.updateOne(filter, updateDoc, options);
+            console.log(result);
+            res.send(result);
         })
 
     }
