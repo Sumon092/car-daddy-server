@@ -98,6 +98,12 @@ async function run() {
             const parts = await cursor.toArray();
             res.send(parts);
         });
+        app.get('/part', async (req, res) => {
+            const query = {};
+            const cursor = partsCollection.find(query)
+            const parts = await cursor.toArray();
+            res.send(parts);
+        });
 
         app.get('/parts/:id', async (req, res) => {
             const id = req.params._id;
@@ -105,6 +111,12 @@ async function run() {
             const result = await partsCollection.findOne(query);
             res.send(result);
         });
+
+        app.get('/orders', async (req, res) => {
+            const orders = req.body;
+            const result = await orderCollection.find(orders).toArray()
+            res.send(result)
+        })
 
         app.get('/order', verifyJWT, async (req, res) => {
             // const query = {}
@@ -123,7 +135,7 @@ async function run() {
 
         })
 
-        app.get('/products', verifyJWT, verifyAdmin, async (req, res) => {
+        app.get('/products', async (req, res) => {
             const products = await productsCollection.find().toArray();
             res.send(products)
         })
