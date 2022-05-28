@@ -19,14 +19,6 @@ app.use(function (req, res, next) {
     next()
 })
 
-
-
-
-
-
-
-
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.xk2aa.mongodb.net/?retryWrites=true&w=majority`;
 console.log(uri);
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
@@ -184,7 +176,7 @@ async function run() {
             }
             const result = await orderCollection.insertOne(order);
             return res.send({ success: true, result });
-        })
+        });
 
         app.put('/profile/:email', async (req, res) => {
             const email = req.params.email;
@@ -197,7 +189,26 @@ async function run() {
             const result = await profileCollection.updateOne(filter, updateDoc, options);
             console.log(result);
             res.send(result);
+        });
+
+        app.get('/reviews', async (req, res) => {
+            // const reviews = {}
+            const result = await (await reviewsCollection.find().toArray()).reverse()
+            res.send(result)
         })
+
+
+        app.post('/reviews', async (req, res) => {
+            const reviews = req.body;
+            const query = { email: reviews.email, name: reviews.name, rating: reviews.ratings, ratingText: reviews.ratingText }
+            const exists = await reviewsCollection.findOne(query)
+            if (exists) {
+                res.send({ success: false, reviews: exists })
+            }
+            const result = await reviewsCollection.insertOne(reviews);
+            res.send({ success: true, result })
+        })
+
 
     }
     finally {
