@@ -7,6 +7,18 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 
 const cors = require('cors');
 app.use(cors());
+// const corsConfig = {
+//     origin: '*',
+//     Credential: true,
+//     methods: ['GET', 'POST', 'PUT', 'DELETE']
+// }
+// app.options('*', cors(corsConfig))
+// app.use(express.json())
+// app.use(function (req, res, next) {
+//     res.header('Access-Control-Allow-Origin', '*')
+//     res.header('Access-Control-Allow-Header', '')
+// })
+
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.xk2aa.mongodb.net/?retryWrites=true&w=majority`;
