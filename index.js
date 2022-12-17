@@ -218,7 +218,7 @@ async function run() {
 run().catch(console.dir);
 
 app.get('/', (req, res) => {
-    res.send('car part server on heroku!')
+    res.send('car part server running on vercel!')
 })
 
 app.listen(port, () => {
